@@ -4,7 +4,7 @@ This is a project to try and learn OpenGL following the web guide on [learnopeng
 ## Agenda
 - [x] Install OpenGL (GLFW, and Glad)
 - [x] Create a window ([Hello Window](https://learnopengl.com/Getting-started/Hello-Window))
-- [ ] Create a coloured square ([Hello Triangle](https://learnopengl.com/Getting-started/Hello-Triangle))
+- [x] Create a coloured square ([Hello Triangle](https://learnopengl.com/Getting-started/Hello-Triangle))
 - [ ] Setup more complex shaders ([Shaders](https://learnopengl.com/Getting-started/Shaders))
 - [ ] Load and display textures ([Textures](https://learnopengl.com/Getting-started/Textures))
 - [ ] Screen space transformations ([Transformations](https://learnopengl.com/Getting-started/Transformations))
