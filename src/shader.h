@@ -35,6 +35,11 @@ class Shader {
             glUseProgram(this->id);
         };
 
+        void SetUniform1i(const char* name, int value) {
+            int location = glGetUniformLocation(this->id, name);
+            glUniform1i(location, value);
+        }
+
     private:
         std::string ReadFile(const char* file) {
             std::string contents;

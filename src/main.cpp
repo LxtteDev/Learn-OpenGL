@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <cstdlib>
 
+#include "texture.h"
 #include "shader.h"
 
 #define ASSERT(x, msg) if (!(x)) { printf("%s\n", msg); exit(1); }
@@ -22,11 +23,11 @@ int main(int argc, char** argv) {
 
 
     // Setup square
-    float verticies[20] = {
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom Left
-        -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Top Left
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Bottom Right
-         0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // Top Right
+    float verticies[28] = {
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom Left
+        -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Top Left
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Bottom Right
+         0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f  // Top Right
     };
 
     unsigned int indices[6] = {
@@ -49,10 +50,12 @@ int main(int argc, char** argv) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
 
     // Layout Location, Size, Type, Normalised, Stride, Offset
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -61,12 +64,19 @@ int main(int argc, char** argv) {
     // Setup shaders
     Shader* shader = new Shader("res/vertex.glsl", "res/fragment.glsl");
 
+
+    // Setup textures
+    Texture* texture = new Texture("res/texture.png");
+    shader->SetUniform1i("uTexture", texture->GetTextureID());
+
+
     // Start render loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader->Bind();
+        texture->Bind();
         glBindVertexArray(vertexArray);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Type, Index Count, Index Type, Offset
 
