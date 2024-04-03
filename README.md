@@ -7,6 +7,6 @@ This is a project to try and learn OpenGL following the web guide on [learnopeng
 - [x] Create a coloured square ([Hello Triangle](https://learnopengl.com/Getting-started/Hello-Triangle))
 - [x] Setup more complex shaders ([Shaders](https://learnopengl.com/Getting-started/Shaders))
 - [x] Load and display textures ([Textures](https://learnopengl.com/Getting-started/Textures))
-- [ ] Screen space transformations ([Transformations](https://learnopengl.com/Getting-started/Transformations))
+- [x] Screen space transformations ([Transformations](https://learnopengl.com/Getting-started/Transformations))
 - [ ] Object space transformations ([Coordinate Systems](https://learnopengl.com/Getting-started/Coordinate-Systems))
 - [ ] Global transformations ([Camera](https://learnopengl.com/Getting-started/Camera))

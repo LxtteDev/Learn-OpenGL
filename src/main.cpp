@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <cstdlib>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+
 #include "texture.h"
 #include "shader.h"
 
@@ -75,7 +78,16 @@ int main(int argc, char** argv) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        float time = glfwGetTime();
+
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::rotate(transform, time, glm::vec3(0.0f, 0.0f, 1.0f));
+        transform = glm::translate(transform, glm::vec3(0.0f, 0.6f, 0.0f));
+        transform = glm::rotate(transform, -time, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        shader->SetUniformMat4f("uTransform", transform);
         shader->Bind();
+
         texture->Bind();
         glBindVertexArray(vertexArray);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Type, Index Count, Index Type, Offset

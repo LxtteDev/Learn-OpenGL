@@ -16,7 +16,8 @@ project "OpenGL"
     includedirs {
         "src",
         "vendor/glad/include",
-        "vendor/glfw/include"
+        "vendor/glfw/include",
+        "vendor/glm"
     }
     
     files {
@@ -28,5 +29,7 @@ project "OpenGL"
         
         "vendor/glfw/include/**.h",
         "vendor/glfw/src/**.h",
-        "vendor/glfw/src/**.c"
+        "vendor/glfw/src/**.c",
+
+        "vendor/glm/glm/**.hpp"
     }  

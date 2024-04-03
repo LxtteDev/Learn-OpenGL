@@ -1,3 +1,5 @@
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
 #include <glad/gl.h>
 #include <fstream>
 #include <sstream>
@@ -38,6 +40,11 @@ class Shader {
         void SetUniform1i(const char* name, int value) {
             int location = glGetUniformLocation(this->id, name);
             glUniform1i(location, value);
+        }
+
+        void SetUniformMat4f(const char* name, glm::mat4 matrix) {
+            int location = glGetUniformLocation(this->id, name);
+            glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         }
 
     private:
