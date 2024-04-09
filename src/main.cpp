@@ -25,40 +25,84 @@ int main(int argc, char** argv) {
     GLASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));
 
 
+    // Render information
+    glEnable(GL_DEPTH_TEST);
+    glfwSwapInterval(1);
+
+
     // Setup square
-    float verticies[28] = {
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Bottom Left
-        -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Top Left
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Bottom Right
-         0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f  // Top Right
+    float pos = 0.5f;
+    float vertices[] = {
+        -pos, -pos, -pos,  0.0f, 0.0f,
+         pos, -pos, -pos,  1.0f, 0.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,
+        -pos,  pos, -pos,  0.0f, 1.0f,
+        -pos, -pos, -pos,  0.0f, 0.0f,
+
+        -pos, -pos,  pos,  0.0f, 0.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,
+         pos,  pos,  pos,  1.0f, 1.0f,
+         pos,  pos,  pos,  1.0f, 1.0f,
+        -pos,  pos,  pos,  0.0f, 1.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,
+
+        -pos,  pos,  pos,  1.0f, 0.0f,
+        -pos,  pos, -pos,  1.0f, 1.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,
+        -pos,  pos,  pos,  1.0f, 0.0f,
+
+         pos,  pos,  pos,  1.0f, 0.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,
+         pos, -pos, -pos,  0.0f, 1.0f,
+         pos, -pos, -pos,  0.0f, 1.0f,
+         pos, -pos,  pos,  0.0f, 0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,
+
+        -pos, -pos, -pos,  0.0f, 1.0f,
+         pos, -pos, -pos,  1.0f, 1.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f,
+
+        -pos,  pos, -pos,  0.0f, 1.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,
+        -pos,  pos,  pos,  0.0f, 0.0f,
+        -pos,  pos, -pos,  0.0f, 1.0f
     };
 
-    unsigned int indices[6] = {
-        0, 1, 3,
-        0, 2, 3     
+    glm::vec3 positions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
     };
 
     unsigned int vertexArray;
     glGenBuffers(1, &vertexArray);
     glBindVertexArray(vertexArray);
 
-    unsigned int elementBuffer;
-    glGenBuffers(1, &elementBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer); // Do not unbind while the Vertex Array is active
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     unsigned int arrayBuffer;
     glGenBuffers(1, &arrayBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, arrayBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Layout Location, Size, Type, Normalised, Stride, Offset
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -69,28 +113,38 @@ int main(int argc, char** argv) {
 
 
     // Setup textures
-    Texture* texture = new Texture("res/texture.png");
+    Texture* texture = new Texture("res/texture-border.png");
     shader->SetUniform1i("uTexture", texture->GetTextureID());
+
+    
+    // Setup projections
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
 
 
     // Start render loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float time = glfwGetTime();
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
+        view = glm::rotate(view, time * glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::rotate(transform, time, glm::vec3(0.0f, 0.0f, 1.0f));
-        transform = glm::translate(transform, glm::vec3(0.0f, 0.6f, 0.0f));
-        transform = glm::rotate(transform, -time, glm::vec3(0.0f, 0.0f, 1.0f));
-
-        shader->SetUniformMat4f("uTransform", transform);
+        shader->SetUniformMat4f("uProjection", projection);
+        shader->SetUniformMat4f("uView", view);
         shader->Bind();
 
         texture->Bind();
         glBindVertexArray(vertexArray);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Type, Index Count, Index Type, Offset
+
+        for (unsigned int i = 0; i < 10; i++) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, positions[i] + glm::vec3(0.0f, 0.0f, 5.0f));
+            model = glm::rotate(model, time * glm::radians(20.0f * (i + 1)), glm::vec3(1.0f, 0.3f, 0.5f));
+
+            shader->SetUniformMat4f("uModel", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -1,17 +1,16 @@
 #version 330 core
 
-layout (location = 0) in vec2 aPosition;
-layout (location = 1) in vec3 aColour;
-layout (location = 2) in vec2 aTexCoord;
+layout (location = 0) in vec3 aPosition;
+layout (location = 1) in vec2 aTexCoord;
 
-out vec3 sColour;
 out vec2 sTexCoord;
 
-uniform mat4 uTransform;
+uniform mat4 uProjection;
+uniform mat4 uModel;
+uniform mat4 uView;
 
 void main() {
-   gl_Position = uTransform * vec4(aPosition.x, aPosition.y, 0.0, 1.0);
+   gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
 
-   sColour = aColour;
    sTexCoord = aTexCoord;
 }
