@@ -8,9 +8,18 @@
 
 #include "texture.h"
 #include "shader.h"
+#include "camera.h"
 
 #define ASSERT(x, msg) if (!(x)) { printf("%s\n", msg); exit(1); }
 #define GLASSERT(x) if (!(x)) { const char* message; int error = glfwGetError(&message); printf("GLFW Error %i: %s\n", error, message); glfwTerminate(); exit(1); }
+
+#define SCROLL_SENSITIVITY 2.0f
+
+float fov = 45.0f;
+void HandleScroll(GLFWwindow* window, double x, double y) {
+    fov -= y * SCROLL_SENSITIVITY;
+    fov = std::clamp(fov, 1.0f, 45.0f);
+}
 
 int main(int argc, char** argv) {
     GLASSERT(glfwInit());
@@ -19,6 +28,10 @@ int main(int argc, char** argv) {
     // Setup window
     GLFWwindow* window = glfwCreateWindow(800, 600, "Breaking GL", NULL, NULL);
     GLASSERT(window != NULL);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    float deltaTime = 0.0f;
+    float lastTime = 0.0f;
     
     // Load window context
     glfwMakeContextCurrent(window);
@@ -117,8 +130,13 @@ int main(int argc, char** argv) {
     shader->SetUniform1i("uTexture", texture->GetTextureID());
 
     
-    // Setup projections
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
+    // Setup camera
+    Camera* camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glfwSetWindowUserPointer(window, camera);
+    glfwSetScrollCallback(window, HandleScroll);  
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+        static_cast<Camera*>(glfwGetWindowUserPointer(window))->HandleMouse(window, x, y);
+    });  
 
 
     // Start render loop
@@ -126,9 +144,13 @@ int main(int argc, char** argv) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float time = glfwGetTime();
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
-        view = glm::rotate(view, time * glm::radians(15.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        float time = (float)glfwGetTime();
+        deltaTime = time - lastTime;
+        lastTime = time;
+
+        camera->HandleKeyboard(window, deltaTime);
+        glm::mat4 projection = glm::perspective(glm::radians(fov), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
+        glm::mat4 view = camera->GetViewMatrix();
 
         shader->SetUniformMat4f("uProjection", projection);
         shader->SetUniformMat4f("uView", view);
@@ -139,7 +161,7 @@ int main(int argc, char** argv) {
 
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, positions[i] + glm::vec3(0.0f, 0.0f, 5.0f));
+            model = glm::translate(model, positions[i]);
             model = glm::rotate(model, time * glm::radians(20.0f * (i + 1)), glm::vec3(1.0f, 0.3f, 0.5f));
 
             shader->SetUniformMat4f("uModel", model);
