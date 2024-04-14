@@ -47,6 +47,19 @@ class Shader {
             glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         }
 
+        void SetUniformVec3f(const char* name, float a, float b, float c) {
+            int location = glGetUniformLocation(this->id, name);
+            glUniform3f(location, a, b, c);
+        }
+
+        void SetUniformVec3f(const char* name, float a) {
+            Shader::SetUniformVec3f(name, a, a, a);
+        }
+
+        void SetUniformVec3f(const char* name, glm::vec3 vector) {
+            Shader::SetUniformVec3f(name, vector.x, vector.y, vector.z);
+        }
+
     private:
         std::string ReadFile(const char* file) {
             std::string contents;

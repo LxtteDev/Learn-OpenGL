@@ -45,6 +45,10 @@ class Camera {
         glm::mat4 GetViewMatrix() {
             return glm::lookAt(this->position, this->position + this->direction, this->up);
         };
+
+        glm::vec3 GetPosition() {
+            return this->position;
+        }
         
     private:
         void UpdateVectors() {

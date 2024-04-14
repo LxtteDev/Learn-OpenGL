@@ -46,60 +46,47 @@ int main(int argc, char** argv) {
     // Setup square
     float pos = 0.5f;
     float vertices[] = {
-        -pos, -pos, -pos,  0.0f, 0.0f,
-         pos, -pos, -pos,  1.0f, 0.0f,
-         pos,  pos, -pos,  1.0f, 1.0f,
-         pos,  pos, -pos,  1.0f, 1.0f,
-        -pos,  pos, -pos,  0.0f, 1.0f,
-        -pos, -pos, -pos,  0.0f, 0.0f,
+        -pos, -pos, -pos,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+         pos, -pos, -pos,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+        -pos,  pos, -pos,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+        -pos, -pos, -pos,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
 
-        -pos, -pos,  pos,  0.0f, 0.0f,
-         pos, -pos,  pos,  1.0f, 0.0f,
-         pos,  pos,  pos,  1.0f, 1.0f,
-         pos,  pos,  pos,  1.0f, 1.0f,
-        -pos,  pos,  pos,  0.0f, 1.0f,
-        -pos, -pos,  pos,  0.0f, 0.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+         pos,  pos,  pos,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+         pos,  pos,  pos,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+        -pos,  pos,  pos,  0.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
 
-        -pos,  pos,  pos,  1.0f, 0.0f,
-        -pos,  pos, -pos,  1.0f, 1.0f,
-        -pos, -pos, -pos,  0.0f, 1.0f,
-        -pos, -pos, -pos,  0.0f, 1.0f,
-        -pos, -pos,  pos,  0.0f, 0.0f,
-        -pos,  pos,  pos,  1.0f, 0.0f,
+        -pos,  pos,  pos,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+        -pos,  pos, -pos,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+        -pos,  pos,  pos,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
 
-         pos,  pos,  pos,  1.0f, 0.0f,
-         pos,  pos, -pos,  1.0f, 1.0f,
-         pos, -pos, -pos,  0.0f, 1.0f,
-         pos, -pos, -pos,  0.0f, 1.0f,
-         pos, -pos,  pos,  0.0f, 0.0f,
-         pos,  pos,  pos,  1.0f, 0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+         pos, -pos, -pos,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+         pos, -pos, -pos,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+         pos, -pos,  pos,  0.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
 
-        -pos, -pos, -pos,  0.0f, 1.0f,
-         pos, -pos, -pos,  1.0f, 1.0f,
-         pos, -pos,  pos,  1.0f, 0.0f,
-         pos, -pos,  pos,  1.0f, 0.0f,
-        -pos, -pos,  pos,  0.0f, 0.0f,
-        -pos, -pos, -pos,  0.0f, 1.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+         pos, -pos, -pos,  1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+         pos, -pos,  pos,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+        -pos, -pos,  pos,  0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+        -pos, -pos, -pos,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
 
-        -pos,  pos, -pos,  0.0f, 1.0f,
-         pos,  pos, -pos,  1.0f, 1.0f,
-         pos,  pos,  pos,  1.0f, 0.0f,
-         pos,  pos,  pos,  1.0f, 0.0f,
-        -pos,  pos,  pos,  0.0f, 0.0f,
-        -pos,  pos, -pos,  0.0f, 1.0f
-    };
-
-    glm::vec3 positions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f), 
-        glm::vec3( 2.0f,  5.0f, -15.0f), 
-        glm::vec3(-1.5f, -2.2f, -2.5f),  
-        glm::vec3(-3.8f, -2.0f, -12.3f),  
-        glm::vec3( 2.4f, -0.4f, -3.5f),  
-        glm::vec3(-1.7f,  3.0f, -7.5f),  
-        glm::vec3( 1.3f, -2.0f, -2.5f),  
-        glm::vec3( 1.5f,  2.0f, -2.5f), 
-        glm::vec3( 1.5f,  0.2f, -1.5f), 
-        glm::vec3(-1.3f,  1.0f, -1.5f)  
+        -pos,  pos, -pos,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+         pos,  pos, -pos,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+         pos,  pos,  pos,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+        -pos,  pos,  pos,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+        -pos,  pos, -pos,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
     };
 
     unsigned int vertexArray;
@@ -112,37 +99,40 @@ int main(int argc, char** argv) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Layout Location, Size, Type, Normalised, Stride, Offset
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
 
-    // Setup shaders
-    Shader* shader = new Shader("res/vertex.glsl", "res/fragment.glsl");
-
-
-    // Setup textures
-    Texture* texture = new Texture("res/texture-border.png");
-    shader->SetUniform1i("uTexture", texture->GetTextureID());
-
-    
     // Setup camera
     Camera* camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glfwSetWindowUserPointer(window, camera);
     glfwSetScrollCallback(window, HandleScroll);  
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
         static_cast<Camera*>(glfwGetWindowUserPointer(window))->HandleMouse(window, x, y);
-    });  
+    });
+
+
+    // Setup shaders
+    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f,2.0f);
+    glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 objectColour = glm::vec3(1.0f, 0.5f, 0.31f);
+
+    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuseSpecular.glsl");
+    Shader* lightShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/light.glsl");
 
 
     // Start render loop
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
         float time = (float)glfwGetTime();
         deltaTime = time - lastTime;
@@ -152,19 +142,40 @@ int main(int argc, char** argv) {
         glm::mat4 projection = glm::perspective(glm::radians(fov), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
         glm::mat4 view = camera->GetViewMatrix();
 
-        shader->SetUniformMat4f("uProjection", projection);
-        shader->SetUniformMat4f("uView", view);
-        shader->Bind();
+        // Draw Cube
+        {
+            cubeShader->Bind();
 
-        texture->Bind();
-        glBindVertexArray(vertexArray);
-
-        for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, positions[i]);
-            model = glm::rotate(model, time * glm::radians(20.0f * (i + 1)), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            shader->SetUniformMat4f("uModel", model);
+            cubeShader->SetUniformMat4f("uModel", model);
+            cubeShader->SetUniformMat4f("uProjection", projection);
+            cubeShader->SetUniformMat4f("uView", view);
+
+            cubeShader->SetUniformVec3f("uLightingPosition", lightPosition); // Diffuse & Specular
+            cubeShader->SetUniformVec3f("uViewPosition", camera->GetPosition()); // Specular
+            cubeShader->SetUniformVec3f("uLightingColour", lightColour);
+            cubeShader->SetUniformVec3f("uObjectColour", objectColour);
+
+            glBindVertexArray(vertexArray);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+        // Draw Light
+        {
+            lightShader->Bind();
+
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, lightPosition);
+            model = glm::scale(model, glm::vec3(0.2f)); 
+
+            lightShader->SetUniformMat4f("uModel", model);
+            lightShader->SetUniformMat4f("uProjection", projection);
+            lightShader->SetUniformMat4f("uView", view);
+
+            lightShader->SetUniformVec3f("uLightingColour", lightColour);
+
+            glBindVertexArray(vertexArray);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
