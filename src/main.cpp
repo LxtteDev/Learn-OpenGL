@@ -121,10 +121,9 @@ int main(int argc, char** argv) {
 
     // Setup shaders
     glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f,2.0f);
-    glm::vec3 lightColour = glm::vec3(1.0f, 1.0f, 1.0f);
     glm::vec3 objectColour = glm::vec3(1.0f, 0.5f, 0.31f);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuseSpecular.glsl");
+    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/material.glsl");
     Shader* lightShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/light.glsl");
 
 
@@ -137,6 +136,12 @@ int main(int argc, char** argv) {
         float time = (float)glfwGetTime();
         deltaTime = time - lastTime;
         lastTime = time;
+
+        glm::vec3 lightColour;
+        lightColour.x = sin(glfwGetTime() * 2.0f);
+        lightColour.y = sin(glfwGetTime() * 0.7f);
+        lightColour.z = sin(glfwGetTime() * 1.3f);
+
 
         camera->HandleKeyboard(window, deltaTime);
         glm::mat4 projection = glm::perspective(glm::radians(fov), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
@@ -152,10 +157,17 @@ int main(int argc, char** argv) {
             cubeShader->SetUniformMat4f("uProjection", projection);
             cubeShader->SetUniformMat4f("uView", view);
 
-            cubeShader->SetUniformVec3f("uLightingPosition", lightPosition); // Diffuse & Specular
-            cubeShader->SetUniformVec3f("uViewPosition", camera->GetPosition()); // Specular
-            cubeShader->SetUniformVec3f("uLightingColour", lightColour);
-            cubeShader->SetUniformVec3f("uObjectColour", objectColour);
+            cubeShader->SetUniformVec3f("uViewPosition", camera->GetPosition());
+
+            cubeShader->SetUniformVec3f("light.position", lightPosition);
+            cubeShader->SetUniformVec3f("light.specular", 1.0f);
+            cubeShader->SetUniformVec3f("light.ambient", lightColour * glm::vec3(0.2f));
+            cubeShader->SetUniformVec3f("light.diffuse", lightColour * glm::vec3(0.5f));
+
+            cubeShader->SetUniform1f("material.shininess", 32.0f);
+            cubeShader->SetUniformVec3f("material.specular", 0.5f);
+            cubeShader->SetUniformVec3f("material.ambient", objectColour);
+            cubeShader->SetUniformVec3f("material.diffuse", objectColour);
 
             glBindVertexArray(vertexArray);
             glDrawArrays(GL_TRIANGLES, 0, 36);
