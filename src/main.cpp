@@ -123,8 +123,13 @@ int main(int argc, char** argv) {
     glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f,2.0f);
     glm::vec3 objectColour = glm::vec3(1.0f, 0.5f, 0.31f);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/material.glsl");
+    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/materialTexture.glsl");
     Shader* lightShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/light.glsl");
+
+
+    // Setup Textures
+    Texture* crateSpecular = new Texture("res/textures/crateSpecular.png");
+    Texture* crateTexture = new Texture("res/textures/crate.png");
 
 
     // Start render loop
@@ -137,10 +142,7 @@ int main(int argc, char** argv) {
         deltaTime = time - lastTime;
         lastTime = time;
 
-        glm::vec3 lightColour;
-        lightColour.x = sin(glfwGetTime() * 2.0f);
-        lightColour.y = sin(glfwGetTime() * 0.7f);
-        lightColour.z = sin(glfwGetTime() * 1.3f);
+        glm::vec3 lightColour = glm::vec3(1.0f);
 
 
         camera->HandleKeyboard(window, deltaTime);
@@ -164,10 +166,11 @@ int main(int argc, char** argv) {
             cubeShader->SetUniformVec3f("light.ambient", lightColour * glm::vec3(0.2f));
             cubeShader->SetUniformVec3f("light.diffuse", lightColour * glm::vec3(0.5f));
 
-            cubeShader->SetUniform1f("material.shininess", 32.0f);
-            cubeShader->SetUniformVec3f("material.specular", 0.5f);
-            cubeShader->SetUniformVec3f("material.ambient", objectColour);
-            cubeShader->SetUniformVec3f("material.diffuse", objectColour);
+            cubeShader->SetUniform1f("material.shininess", 1000.0f);
+            crateSpecular->Bind();
+            cubeShader->SetUniform1i("material.specular", crateSpecular->GetTextureID());
+            crateTexture->Bind();
+            cubeShader->SetUniform1i("material.diffuse", crateTexture->GetTextureID());
 
             glBindVertexArray(vertexArray);
             glDrawArrays(GL_TRIANGLES, 0, 36);

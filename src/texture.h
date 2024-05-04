@@ -10,7 +10,7 @@ class Texture {
             unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
 
             glGenTextures(1, &(this->id));
-            glBindTexture(GL_TEXTURE_2D, this->id);
+            this->Bind();
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -26,6 +26,7 @@ class Texture {
         };
 
         void Bind() {
+            glActiveTexture(GL_TEXTURE0 + this->id);
             glBindTexture(GL_TEXTURE_2D, this->id);
         };
 
