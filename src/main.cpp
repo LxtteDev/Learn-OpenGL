@@ -89,6 +89,19 @@ int main(int argc, char** argv) {
         -pos,  pos, -pos,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
     };
 
+    glm::vec3 positions[] = {
+        glm::vec3( 0.0f,  0.0f,  0.0f), 
+        glm::vec3( 2.0f,  5.0f, -15.0f), 
+        glm::vec3(-1.5f, -2.2f, -2.5f),  
+        glm::vec3(-3.8f, -2.0f, -12.3f),  
+        glm::vec3( 2.4f, -0.4f, -3.5f),  
+        glm::vec3(-1.7f,  3.0f, -7.5f),  
+        glm::vec3( 1.3f, -2.0f, -2.5f),  
+        glm::vec3( 1.5f,  2.0f, -2.5f), 
+        glm::vec3( 1.5f,  0.2f, -1.5f), 
+        glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+
     unsigned int vertexArray;
     glGenBuffers(1, &vertexArray);
     glBindVertexArray(vertexArray);
@@ -120,10 +133,11 @@ int main(int argc, char** argv) {
 
 
     // Setup shaders
-    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f,2.0f);
+    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
+    glm::vec3 lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
     glm::vec3 objectColour = glm::vec3(1.0f, 0.5f, 0.31f);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/materialTexture.glsl");
+    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lightingPlus/spotLight.glsl");
     Shader* lightShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/light.glsl");
 
 
@@ -153,27 +167,50 @@ int main(int argc, char** argv) {
         {
             cubeShader->Bind();
 
-            glm::mat4 model = glm::mat4(1.0f);
-
-            cubeShader->SetUniformMat4f("uModel", model);
+            // Positions
             cubeShader->SetUniformMat4f("uProjection", projection);
             cubeShader->SetUniformMat4f("uView", view);
 
             cubeShader->SetUniformVec3f("uViewPosition", camera->GetPosition());
 
-            cubeShader->SetUniformVec3f("light.position", lightPosition);
+            // Lights
+            cubeShader->SetUniformVec3f("light.position", camera->GetPosition());
+            cubeShader->SetUniformVec3f("light.direction", camera->GetForward());
+
             cubeShader->SetUniformVec3f("light.specular", 1.0f);
             cubeShader->SetUniformVec3f("light.ambient", lightColour * glm::vec3(0.2f));
             cubeShader->SetUniformVec3f("light.diffuse", lightColour * glm::vec3(0.5f));
+            
+            cubeShader->SetUniform1f("light.constant", 1.0f);
+            cubeShader->SetUniform1f("light.linear", 0.09f);
+            cubeShader->SetUniform1f("light.quadratic", 0.032f);
 
+            cubeShader->SetUniform1f("light.cutoff", glm::cos(glm::radians( 12.5f )));
+            cubeShader->SetUniform1f("light.outerCutoff", glm::cos(glm::radians( 17.5f )));
+
+            // Materials
             cubeShader->SetUniform1f("material.shininess", 1000.0f);
             crateSpecular->Bind();
             cubeShader->SetUniform1i("material.specular", crateSpecular->GetTextureID());
             crateTexture->Bind();
             cubeShader->SetUniform1i("material.diffuse", crateTexture->GetTextureID());
 
-            glBindVertexArray(vertexArray);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            for (unsigned int i = 0; i < 10; i++) {
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, positions[i]);
+
+                float angle = 20.0f * i;
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+                cubeShader->SetUniformMat4f("uModel", model);
+
+                glBindVertexArray(vertexArray);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }            
+
+            // glBindVertexArray(vertexArray);
+            // glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         // Draw Light

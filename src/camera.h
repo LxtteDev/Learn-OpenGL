@@ -49,6 +49,10 @@ class Camera {
         glm::vec3 GetPosition() {
             return this->position;
         }
+
+        glm::vec3 GetForward() {
+            return this->direction;
+        };
         
     private:
         void UpdateVectors() {
