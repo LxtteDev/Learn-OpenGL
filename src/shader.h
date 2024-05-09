@@ -33,7 +33,9 @@ class Shader {
             glDeleteShader(fragmentShader);
         };
 
-        void Bind() {
+        Shader() {};
+
+        virtual void Bind() {
             glUseProgram(this->id);
         };
 
@@ -54,6 +56,7 @@ class Shader {
 
         void SetUniformVec3f(const char* name, float a, float b, float c) {
             int location = glGetUniformLocation(this->id, name);
+            // printf("SetUniformVec3f(%s, %f, %f, %f) -> glUniform3f(%i, %f, %f, %f)\n", name, a, b, c, location, a, b, c);
             glUniform3f(location, a, b, c);
         }
 
@@ -65,7 +68,7 @@ class Shader {
             Shader::SetUniformVec3f(name, vector.x, vector.y, vector.z);
         }
 
-    private:
+    protected:
         std::string ReadFile(const char* file) {
             std::string contents;
 
@@ -82,7 +85,7 @@ class Shader {
             return contents;
         };
 
-        unsigned int CompileShader(unsigned int type, std::string source) {
+        virtual unsigned int CompileShader(unsigned int type, std::string source) {
             int success;
             char message[256];
             const char* sourceStr = source.c_str();

@@ -54,7 +54,7 @@ void main() {
 
     // Spotlight
     float theta = dot(lightingDirection, normalize(-light.direction));
-    float epsilon   = light.cutoff - light.outerCutoff;
+    float epsilon = light.cutoff - light.outerCutoff;
     float intensity = clamp(( theta - light.outerCutoff ) / epsilon, 0.0, 1.0); 
 
     diffuse *= intensity;

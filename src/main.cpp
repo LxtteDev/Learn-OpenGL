@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
+#include "lightShader.h"
 #include "texture.h"
 #include "shader.h"
 #include "camera.h"
@@ -137,7 +138,10 @@ int main(int argc, char** argv) {
     glm::vec3 lightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
     glm::vec3 objectColour = glm::vec3(1.0f, 0.5f, 0.31f);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lightingPlus/spotLight.glsl");
+    LightShader* cubeShader = new LightShader("res/shaders/vertex.glsl");
+    cubeShader->AddLightCaster(lightDirection, glm::vec3(0.05f), glm::vec3(0.4f), glm::vec3(0.5f));
+    cubeShader->AddPointLight(lightPosition, glm::vec3(1.0f), glm::vec3(0.2f), glm::vec3(0.5f), 1.0f, 0.09f, 0.032f);
+
     Shader* lightShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/light.glsl");
 
 
@@ -172,21 +176,6 @@ int main(int argc, char** argv) {
             cubeShader->SetUniformMat4f("uView", view);
 
             cubeShader->SetUniformVec3f("uViewPosition", camera->GetPosition());
-
-            // Lights
-            cubeShader->SetUniformVec3f("light.position", camera->GetPosition());
-            cubeShader->SetUniformVec3f("light.direction", camera->GetForward());
-
-            cubeShader->SetUniformVec3f("light.specular", 1.0f);
-            cubeShader->SetUniformVec3f("light.ambient", lightColour * glm::vec3(0.2f));
-            cubeShader->SetUniformVec3f("light.diffuse", lightColour * glm::vec3(0.5f));
-            
-            cubeShader->SetUniform1f("light.constant", 1.0f);
-            cubeShader->SetUniform1f("light.linear", 0.09f);
-            cubeShader->SetUniform1f("light.quadratic", 0.032f);
-
-            cubeShader->SetUniform1f("light.cutoff", glm::cos(glm::radians( 12.5f )));
-            cubeShader->SetUniform1f("light.outerCutoff", glm::cos(glm::radians( 17.5f )));
 
             // Materials
             cubeShader->SetUniform1f("material.shininess", 1000.0f);
