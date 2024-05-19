@@ -14,7 +14,10 @@ This is a project to try and learn OpenGL following the web guide on [learnopeng
 #### Lighting
 - [x] Colours ([Colors](https://learnopengl.com/Lighting/Colors))
 - [x] Lighting ([Basic Lighting](https://learnopengl.com/Lighting/Basic-Lighting))
-- [ ] Materials ([Materials](https://learnopengl.com/Lighting/Materials))
-- [ ] Light maps ([Lighting Maps](https://learnopengl.com/Lighting/Lighting-maps))
-- [ ] Emmisive objects ([Light Casters](https://learnopengl.com/Lighting/Light-casters))
-- [ ] Multiple lights ([Multiple Lights](https://learnopengl.com/Lighting/Multiple-lights))
+- [x] Materials ([Materials](https://learnopengl.com/Lighting/Materials))
+- [x] Light maps ([Lighting Maps](https://learnopengl.com/Lighting/Lighting-maps))
+- [x] Emmisive objects ([Light Casters](https://learnopengl.com/Lighting/Light-casters))
+- [x] Multiple lights ([Multiple Lights](https://learnopengl.com/Lighting/Multiple-lights))
+#### Model Loading
+- [x] Mesh ([Mesh](https://learnopengl.com/Model-Loading/Mesh))
+- [ ] Model ([Model](https://learnopengl.com/Model-Loading/Model))

@@ -84,5 +84,5 @@ void main() {
     for (int i = 0; i < NR_LIGHTS; i++)
         colour += calculateLight(uLights[i], normal, viewDirection);
 
-    FragColor = vec4(colour, 1.0);
+    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

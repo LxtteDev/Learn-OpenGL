@@ -106,7 +106,7 @@ class LightShader : public Shader {
             char message[256];
             const char* sourceStr = type == GL_FRAGMENT_SHADER ? std::string("#version 330 core\n#define NR_LIGHTS ").append(std::to_string(this->lights.size())).append("\n").append(std::string(source)).c_str() : source.c_str();
             // const char* sourceStr = source.c_str();
-            // printf("%s\n-----\n", sourceStr);
+            printf("%s\n-----\n", sourceStr);
             // printf("%zu\n", this->lights.size());
 
             unsigned int shader = glCreateShader(type);
