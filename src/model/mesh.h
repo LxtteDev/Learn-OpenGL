@@ -8,10 +8,25 @@
 
 #include "../shader.h"
 
+
+void checkOpenGLError(const char* stmt, const char* fname, int line) {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+        printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+        exit(1);
+    }
+}
+
+#define GL_CHECK(stmt) do { \
+    stmt; \
+    checkOpenGLError(#stmt, __FILE__, __LINE__); \
+} while (0)
+
+
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
-    glm::vec2 uv;
+    // glm::vec2 uv;
 };
 
 enum TextureType {
@@ -27,9 +42,12 @@ enum TextureType {
 class Mesh {
     public:
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*, std::vector<Texture> textures*/) {
-            this->vertices = vertices;
-            this->indices = indices;
+            this->vertices.resize(vertices.size());
+            this->indices.resize(indices.size());
             // this->textures = textures;
+
+            std::copy(vertices.begin(), vertices.end(), this->vertices.begin());
+            std::copy(indices.begin(), indices.end(), this->indices.begin());
 
             Mesh::SetupMesh();
         };
@@ -61,39 +79,68 @@ class Mesh {
 
             // glActiveTexture(GL_TEXTURE0);
 
-            glBindVertexArray(this->vertexArray);
-            glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
+            glGetError();
+            GL_CHECK(glBindVertexArray(this->vertexArray));
+            GL_CHECK(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0));
+            GL_CHECK(glBindVertexArray(0));
         };
+
+        void Debug(int id = -1) {
+            if (id == -1) printf("--- Mesh Debug Info ---\n");
+            else printf("--- Mesh Debug Info (%i) ---\n", id);
+
+            printf("[ Vertex information ]\n");
+            printf("Vertices:  %zu\n", this->vertices.size());
+            printf("Indices:   %zu\n", this->indices.size());
+            printf("Max Index: %u\n", *(std::max_element(this->indices.begin(), this->indices.end())));
+
+            printf("\n[ Buffer information ]\n");
+            printf("Vertex Array:   %i\n", this->vertexArray);
+            printf("Vertex Buffer:  %i\n", this->vertexBuffer);
+            printf("Element Buffer: %i\n", this->elementBuffer);
+
+            printf("\n[ Data information ]\n");
+            printf("Vertex Data: %p\n", &(this->vertices[0]));
+            printf("Index Data:  %p\n", &(this->indices[0]));
+
+            if (id == -1) printf("-----------------------\n");
+            else printf("---------------------------\n", id);
+        };
+
+        bool Check() {
+            return (this->vertices.size() > 0 && this->indices.size() > 0)
+                && (this->vertexArray > 0 && this->vertexBuffer > 0 && this->elementBuffer > 0)
+                && (*(std::max_element(this->indices.begin(), this->indices.end())) < this->indices.size());
+        }
 
     private:
         void SetupMesh() {
             // Generate buffers
-            glGenVertexArrays(1, &(this->vertexArray));
-            glGenBuffers(1, &(this->vertexBuffer));
-            glGenBuffers(1, &(this->elementBuffer));
+            GL_CHECK(glGenVertexArrays(1, &(this->vertexArray)));
+            GL_CHECK(glGenBuffers(1, &(this->vertexBuffer)));
+            GL_CHECK(glGenBuffers(1, &(this->elementBuffer)));
 
             // Bind data
-            glBindVertexArray(this->vertexArray);
+            GL_CHECK(glBindVertexArray(this->vertexArray));
 
-            glBindBuffer(GL_ARRAY_BUFFER, this->vertexBuffer);
-            glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &(this->vertices[0]), GL_STATIC_DRAW);
+            GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, this->vertexBuffer));
+            GL_CHECK(glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &(this->vertices[0]), GL_STATIC_DRAW));
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), &(this->indices[0]), GL_STATIC_DRAW);
+            GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->elementBuffer));
+            GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(unsigned int), &(this->indices[0]), GL_STATIC_DRAW));
 
             // Set vertex attributes
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+            GL_CHECK(glEnableVertexAttribArray(0));
+            GL_CHECK(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));
 
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+            // glEnableVertexAttribArray(2);
+            // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
             // Clean up
-            glBindVertexArray(0);
+            GL_CHECK(glBindVertexArray(0));
         };
 
         std::vector<Vertex> vertices;

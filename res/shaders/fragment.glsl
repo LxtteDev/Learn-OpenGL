@@ -5,8 +5,11 @@ in vec2 sTexCoord;
 out vec4 FragColor;
 
 uniform sampler2D uTexture;
+// uniform vec3 colour;
 
 void main() {
-   // FragColor = texture(uTexture, sTexCoord);
-   FragColor = vec4(0.77, 0.52, 0.75, 1.0);
+   if (gl_FrontFacing)
+      FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+   else
+      discard;
 }

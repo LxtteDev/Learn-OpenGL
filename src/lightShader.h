@@ -104,7 +104,7 @@ class LightShader : public Shader {
         unsigned int CompileShader(unsigned int type, std::string source) override {
             int success;
             char message[256];
-            const char* sourceStr = type == GL_FRAGMENT_SHADER ? std::string("#version 330 core\n#define NR_LIGHTS ").append(std::to_string(this->lights.size())).append("\n").append(std::string(source)).c_str() : source.c_str();
+            const char* sourceStr = type == GL_FRAGMENT_SHADER ? std::string("#version 330 core\n#define NR_LIGHTS ").append(std::to_string(this->lights.size())).append(";\n").append(std::string(source)).c_str() : source.c_str();
             // const char* sourceStr = source.c_str();
             printf("%s\n-----\n", sourceStr);
             // printf("%zu\n", this->lights.size());
