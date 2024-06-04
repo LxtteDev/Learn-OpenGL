@@ -7,26 +7,13 @@
 #include <vector>
 
 #include "../shader.h"
-
-
-void checkOpenGLError(const char* stmt, const char* fname, int line) {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-        printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
-        exit(1);
-    }
-}
-
-#define GL_CHECK(stmt) do { \
-    stmt; \
-    checkOpenGLError(#stmt, __FILE__, __LINE__); \
-} while (0)
+#include "../shared.h"
 
 
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
-    // glm::vec2 uv;
+    glm::vec2 uv;
 };
 
 enum TextureType {
@@ -116,6 +103,7 @@ class Mesh {
     private:
         void SetupMesh() {
             // Generate buffers
+            glGetError();
             GL_CHECK(glGenVertexArrays(1, &(this->vertexArray)));
             GL_CHECK(glGenBuffers(1, &(this->vertexBuffer)));
             GL_CHECK(glGenBuffers(1, &(this->elementBuffer)));
@@ -136,8 +124,8 @@ class Mesh {
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
-            // glEnableVertexAttribArray(2);
-            // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
             // Clean up
             GL_CHECK(glBindVertexArray(0));

@@ -10,6 +10,8 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <tuple>
+#include <map>
 
 #include "../texture.h"
 #include "mesh.h"
@@ -44,7 +46,14 @@ class Model {
             std::vector<Vertex> vertices;
             std::vector<unsigned int> indices;
 
-            unsigned int indexOffset = 1U;
+            unsigned int positionOffset = 1U;
+            std::vector<glm::vec3> positions;
+            unsigned int normalOffset = 1U;
+            std::vector<glm::vec3> normals;
+            unsigned int uvOffset = 1U;
+            std::vector<glm::vec2> uvs;
+
+            std::map<std::tuple<int, int, int>, int> uniqueVertices;
 
             std::string line;
             while (std::getline(file, line)) {
@@ -62,49 +71,102 @@ class Model {
 
                         this->meshes.push_back(mesh);
 
-                        indexOffset += vertices.size();
                         vertices.clear();
                         indices.clear();
+
+                        positionOffset += positions.size(); 
+                        positions.clear();
+                        normalOffset += normals.size(); 
+                        normals.clear();
+                        uvOffset += uvs.size(); 
+                        uvs.clear();
+
+                        uniqueVertices.clear();
                     }
-                } if (prefix == "v") {
+                } if (prefix == "v") { // Vertex Positions
                     float x, y, z;
                     stream >> x >> y >> z;
                     
-                    Vertex vertex;
-                    vertex.position = glm::vec3(x, y, z);
+                    positions.push_back(glm::vec3(x, y, z));
+                } else if (prefix == "vn") { // Vertex Normals
+                    float x, y, z;
+                    stream >> x >> y >> z;
 
-                    vertices.push_back(vertex);
+                    normals.push_back(glm::vec3(x, y, z));
+                } else if (prefix == "vt") { // UV Coords
+                    float x, y;
+                    stream >> x >> y;
+
+                    uvs.push_back(glm::vec2(x, y));          
                 } else if (prefix == "f") {
                     std::string f1, f2, f3, f4;
                     stream >> f1 >> f2 >> f3 >> f4;
 
-                    std::string v1 = f1.substr(0, f1.find("/"));
-                    std::string v2 = f2.substr(0, f2.find("/"));
-                    std::string v3 = f3.substr(0, f3.find("/"));
-                    std::string v4 = f4.substr(0, f4.find("/"));
+                    std::vector<std::string> v1 = Model::ProccessFace(f1);
+                    std::vector<std::string> v2 = Model::ProccessFace(f2);
+                    std::vector<std::string> v3 = Model::ProccessFace(f3);
+                    
+                    // Vertices
+                    int i = vertices.size();
 
-                    if (v4.size() > 0) {
-                        printf("(Four Vertices) %s %s %s %s\n", v1.c_str(), v2.c_str(), v3.c_str(), v4.c_str());
+                    std::tuple<int, int, int> t1 = std::make_tuple(std::stoi(v1[0]) - 1, std::stoi(v1[1]) - 1, std::stoi(v1[2]) - 1);
+                    if (uniqueVertices.find(t1) == uniqueVertices.end()) {
+                        Vertex vertex1;
+                        vertex1.position = positions[std::stoi(v1[0]) - positionOffset];
+                        vertex1.normal = normals[std::stoi(v1[2]) - normalOffset];
+                        vertex1.uv = uvs[std::stoi(v1[1]) - uvOffset];
 
-                        indices.push_back(std::stoi(v1) - indexOffset);
-                        indices.push_back(std::stoi(v2) - indexOffset);
-                        indices.push_back(std::stoi(v3) - indexOffset);
+                        vertices.push_back(vertex1);
+                        uniqueVertices[t1] = vertices.size() - 1;
+                        indices.push_back(vertices.size() - 1);
+                    } else indices.push_back(uniqueVertices[t1]);
 
-                        indices.push_back(std::stoi(v1) - indexOffset);
-                        indices.push_back(std::stoi(v3) - indexOffset);
-                        indices.push_back(std::stoi(v4) - indexOffset);
-                    } else {
-                        indices.push_back(std::stoi(v1) - indexOffset);
-                        indices.push_back(std::stoi(v2) - indexOffset);
-                        indices.push_back(std::stoi(v3) - indexOffset);
-                    }
-                } else if (prefix == "c") {
-                    std::string i, r, g, b;
-                    stream >> i >> r >> g >> b;
+                    std::tuple<int, int, int> t2 = std::make_tuple(std::stoi(v2[0]) - 1, std::stoi(v2[1]) - 1, std::stoi(v2[2]) - 1);
+                    if (uniqueVertices.find(t2) == uniqueVertices.end()) {
+                        Vertex vertex2;
+                        vertex2.position = positions[std::stoi(v2[0]) - positionOffset];
+                        vertex2.normal = normals[std::stoi(v2[2]) - normalOffset];
+                        vertex2.uv = uvs[std::stoi(v2[1]) - uvOffset];
 
-                    glm::vec3 colour = glm::vec3(std::stof(r), std::stof(g), std::stof(b));
+                        vertices.push_back(vertex2);
+                        uniqueVertices[t2] = vertices.size() - 1;
+                        indices.push_back(vertices.size() - 1);
+                    } else indices.push_back(uniqueVertices[t2]);
 
-                    vertices[std::stoi(i) - 1U].normal = colour;
+                    std::tuple<int, int, int> t3 = std::make_tuple(std::stoi(v3[0]) - 1, std::stoi(v3[1]) - 1, std::stoi(v3[2]) - 1);
+                    if (uniqueVertices.find(t3) == uniqueVertices.end()) {
+                        Vertex vertex3;
+                        vertex3.position = positions[std::stoi(v3[0]) - positionOffset];
+                        vertex3.normal = normals[std::stoi(v3[2]) - normalOffset];
+                        vertex3.uv = uvs[std::stoi(v3[1]) - uvOffset];
+
+                        vertices.push_back(vertex3);
+                        uniqueVertices[t3] = vertices.size() - 1;
+                        indices.push_back(vertices.size() - 1);
+                    } else indices.push_back(uniqueVertices[t3]);
+
+                    // Fourth vertex
+                    /* if (f4.size() > 0) {
+                        printf("Fourth vertex\n");
+                        std::string v4 = f4.substr(0, f4.find("/"));
+                        std::string vn4 = f4.substr(v4.length() + 1, f4.find("/", v4.length() + 1) - 2);
+                        std::string vt4 = f4.substr(v4.length() + vn4.length() + 2, f4.find("/", v4.length() + vn4.length() + 2) - 3);
+
+                        std::tuple<int, int, int> t4 = std::make_tuple(std::stoi(v4) - 1, std::stoi(vn4) - 1, std::stoi(vt4) - 1);
+                        if (uniqueVertices.find(t4) == uniqueVertices.end()) {
+                            Vertex vertex4;
+                            vertex4.position = positions[std::stoi(v4) - positionOffset];
+                            vertex4.normal = normals[std::stoi(vn4) - normalOffset];
+                            vertex4.uv = uvs[std::stoi(vt4) - uvOffset];
+
+                            vertices.push_back(vertex4);
+                            uniqueVertices[t4] = vertices.size() - 1;
+                            
+                            indices.push_back(uniqueVertices[t1]);
+                            indices.push_back(uniqueVertices[t3]);
+                            indices.push_back(vertices.size() - 1);
+                        }
+                    } */
                 }
             }
 
@@ -118,7 +180,29 @@ class Model {
 
                 vertices.clear();
                 indices.clear();
+
+                positions.clear();
+                normals.clear();
+                uvs.clear();
+
+                uniqueVertices.clear();
             }
+        }
+
+        std::vector<std::string> ProccessFace(std::string face) {
+            std::vector<std::string> result;
+
+            if (face.find("/") == std::string::npos) return { face };
+
+            int pos;
+            while ((pos = face.find("/")) != std::string::npos) {
+                result.push_back(face.substr(0, pos));
+                face.erase(0, pos + 1);
+            }
+
+            if (face.length() > 0) result.push_back(face);
+
+            return result;
         }
         
         std::vector<Mesh*> meshes;

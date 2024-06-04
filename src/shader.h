@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string>
 
+#include "shared.h"
+
 class Shader {
     public:
         Shader(const char* vertexPath, const char* fragmentPath) {
@@ -41,23 +43,22 @@ class Shader {
 
         void SetUniform1i(const char* name, int value) {
             int location = glGetUniformLocation(this->id, name);
-            glUniform1i(location, value);
+            GL_CHECK(glUniform1i(location, value));
         }
 
         void SetUniform1f(const char* name, float value) {
             int location = glGetUniformLocation(this->id, name);
-            glUniform1f(location, value);
+            GL_CHECK(glUniform1f(location, value));
         }
 
         void SetUniformMat4f(const char* name, glm::mat4 matrix) {
             int location = glGetUniformLocation(this->id, name);
-            glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+            GL_CHECK(glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix)));
         }
 
         void SetUniformVec3f(const char* name, float a, float b, float c) {
             int location = glGetUniformLocation(this->id, name);
-            // printf("SetUniformVec3f(%s, %f, %f, %f) -> glUniform3f(%i, %f, %f, %f)\n", name, a, b, c, location, a, b, c);
-            glUniform3f(location, a, b, c);
+            GL_CHECK(glUniform3f(location, a, b, c));
         }
 
         void SetUniformVec3f(const char* name, float a) {

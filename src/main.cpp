@@ -125,8 +125,7 @@ int main(int argc, char** argv) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/fragment.glsl");
-
+    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuse.glsl");
 
     // Setup Textures
     // Texture* crateSpecular = new Texture("res/textures/crateSpecular.png");
@@ -163,6 +162,10 @@ int main(int argc, char** argv) {
         cubeShader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
         cubeShader->SetUniformVec3f("uLightingColour", 1.0f);
         cubeShader->SetUniformVec3f("uObjectColour", 1.0f, 0.5f, 0.31f);
+
+        cubeShader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
+        cubeShader->SetUniformVec3f("uLightingColour", 1.0f, 1.0f, 1.0f);
+        cubeShader->SetUniformVec3f("uObjectColour", 0.8f, 0.2f, 0.4f);
 
         backpack->Draw();
         
