@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuse.glsl");
+    // Shader* cubeShader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuse.glsl");
 
     // Setup Textures
     // Texture* crateSpecular = new Texture("res/textures/crateSpecular.png");
@@ -150,24 +150,11 @@ int main(int argc, char** argv) {
         glm::mat4 projection = glm::perspective(glm::radians(fov), 8.0f / 6.0f, 0.1f, 100.0f);  // FOV, Aspect ration, near plane, far plane
         glm::mat4 view = camera->GetViewMatrix();
 
-        cubeShader->Bind();
-        cubeShader->SetUniformMat4f("uProjection", projection);
-        cubeShader->SetUniformMat4f("uView", view);
-
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
         model = glm::scale(model, glm::vec3(1.0f));
-        cubeShader->SetUniformMat4f("uModel", model);
 
-        cubeShader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
-        cubeShader->SetUniformVec3f("uLightingColour", 1.0f);
-        cubeShader->SetUniformVec3f("uObjectColour", 1.0f, 0.5f, 0.31f);
-
-        cubeShader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
-        cubeShader->SetUniformVec3f("uLightingColour", 1.0f, 1.0f, 1.0f);
-        cubeShader->SetUniformVec3f("uObjectColour", 0.8f, 0.2f, 0.4f);
-
-        backpack->Draw();
+        backpack->Draw(projection, model, view);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

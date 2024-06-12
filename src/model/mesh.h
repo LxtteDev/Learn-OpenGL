@@ -16,18 +16,37 @@ struct Vertex {
     glm::vec2 uv;
 };
 
-enum TextureType {
-    DIFFUSE = 0,
-    SPECULAR = 1
+struct Material {
+    int specularExp; // Ns
+    glm::vec3 ambient;  // Ka
+    glm::vec3 diffuse;  // Kd
+    glm::vec3 specular; // Ks
+    glm::vec3 emissive; // Ke
+    std::string diffuseTexture;  // map_Kd
+    std::string normalTexture;   // map_Bump
+    std::string specularTexture; // map_Ks
 };
-
-/* struct Texture {
-    unsigned int id;
-    TextureType type;
-}; */
 
 class Mesh {
     public:
+        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, Material* material) {
+            this->vertices.resize(vertices.size());
+            this->indices.resize(indices.size());
+
+            std::copy(vertices.begin(), vertices.end(), this->vertices.begin());
+            std::copy(indices.begin(), indices.end(), this->indices.begin());
+
+            GL_CHECK();
+            this->shader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuse.glsl");
+            this->shader->Bind();
+
+            this->shader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
+            this->shader->SetUniformVec3f("uLightingColour", 1.0f, 1.0f, 1.0f);
+            this->shader->SetUniformVec3f("uObjectColour", material->diffuse);
+
+            Mesh::SetupMesh();
+        };
+
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices /*, std::vector<Texture> textures*/) {
             this->vertices.resize(vertices.size());
             this->indices.resize(indices.size());
@@ -46,10 +65,10 @@ class Mesh {
         };
 
         void Draw() {
-            unsigned int i = 0;
+            /* unsigned int i = 0;
             unsigned int j = 0;
 
-            /* for (unsigned int k = 0; k < this->textures.size(); k++) {
+            for (unsigned int k = 0; k < this->textures.size(); k++) {
                 glActiveTexture(GL_TEXTURE0 + k);
 
                 switch (this->textures[k].type) {
@@ -71,6 +90,16 @@ class Mesh {
             GL_CHECK(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0));
             GL_CHECK(glBindVertexArray(0));
         };
+
+        void Draw(glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
+            this->shader->Bind();
+
+            this->shader->SetUniformMat4f("uProjection", projection);
+            this->shader->SetUniformMat4f("uModel", model);
+            this->shader->SetUniformMat4f("uView", view);
+
+            Mesh::Draw();
+        }
 
         void Debug(int id = -1) {
             if (id == -1) printf("--- Mesh Debug Info ---\n");
@@ -133,7 +162,8 @@ class Mesh {
 
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
-        // std::vector<Texture> textures;
+
+        Shader* shader;
 
         unsigned int vertexArray, vertexBuffer, elementBuffer;
 };

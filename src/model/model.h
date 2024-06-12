@@ -28,6 +28,11 @@ class Model {
                 this->meshes[i]->Draw();
         };
 
+        void Draw(glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
+            for (unsigned int i = 0; i < this->meshes.size(); i++)
+                this->meshes[i]->Draw(projection, model, view);
+        };
+
         void Debug() {
             for (unsigned int i = 0; i < this->meshes.size(); i++)
                 this->meshes[i]->Debug(i);
@@ -45,6 +50,7 @@ class Model {
 
             std::vector<Vertex> vertices;
             std::vector<unsigned int> indices;
+            std::string material = "";
 
             unsigned int positionOffset = 1U;
             std::vector<glm::vec3> positions;
@@ -64,15 +70,32 @@ class Model {
                 std::string prefix;
                 stream >> prefix;
 
-                if (prefix == "o") {
-                    if (vertices.size() > 0 && indices.size() > 0) {
-                        Mesh* mesh = new Mesh(vertices, indices);
-                        if (!mesh->Check()) mesh->Debug(this->meshes.size());
+                if (prefix == "mtllib") {
+                    std::string matFile;
+                    stream >> matFile;
 
-                        this->meshes.push_back(mesh);
+                    std::filesystem::path matPath = full.parent_path() / matFile;
+
+                    Model::LoadMaterial(matPath.c_str());
+                } else if (prefix == "usemtl") {
+                    stream >> material;                
+                } else if (prefix == "o") {
+                    if (vertices.size() > 0 && indices.size() > 0) {
+                        if (material.size() > 0) {
+                            Mesh* mesh = new Mesh(vertices, indices, this->materials[material]);
+                            if (!mesh->Check()) mesh->Debug(this->meshes.size());
+
+                            this->meshes.push_back(mesh);
+                        } else {
+                            Mesh* mesh = new Mesh(vertices, indices);
+                            if (!mesh->Check()) mesh->Debug(this->meshes.size());
+
+                            this->meshes.push_back(mesh);
+                        }
 
                         vertices.clear();
                         indices.clear();
+                        material = "";
 
                         positionOffset += positions.size(); 
                         positions.clear();
@@ -105,7 +128,7 @@ class Model {
                     std::vector<std::string> v1 = Model::ProccessFace(f1);
                     std::vector<std::string> v2 = Model::ProccessFace(f2);
                     std::vector<std::string> v3 = Model::ProccessFace(f3);
-                    
+
                     // Vertices
                     int i = vertices.size();
 
@@ -173,10 +196,17 @@ class Model {
             file.close();
 
             if (vertices.size() > 0 && indices.size() > 0) {
-                Mesh* mesh = new Mesh(vertices, indices);
-                if (!mesh->Check()) mesh->Debug(this->meshes.size());
+                if (material.size() > 0) {
+                    Mesh* mesh = new Mesh(vertices, indices, this->materials[material]);
+                    if (!mesh->Check()) mesh->Debug(this->meshes.size());
 
-                this->meshes.push_back(mesh);
+                    this->meshes.push_back(mesh);
+                } else {
+                    Mesh* mesh = new Mesh(vertices, indices);
+                    if (!mesh->Check()) mesh->Debug(this->meshes.size());
+
+                    this->meshes.push_back(mesh);
+                }
 
                 vertices.clear();
                 indices.clear();
@@ -186,6 +216,72 @@ class Model {
                 uvs.clear();
 
                 uniqueVertices.clear();
+            }
+        }
+
+        void LoadMaterial(std::string path) {
+            std::filesystem::path root = std::filesystem::path(path).parent_path();
+            std::ifstream file;
+            file.open(path);
+
+            std::string line;
+            while (std::getline(file, line)) {
+                if (line.size() == 0) continue;
+
+                std::stringstream stream(line);
+
+                std::string type;
+                stream >> type;
+
+                std::string current = "";
+                Material* material;
+
+                if (type == "newmtl") {
+                    stream >> current;
+                    material = new Material();
+
+                    this->materials[current] = material;
+                } else if (type == "Ns") {
+                    std::string Ns;
+                    stream >> Ns;
+
+                    material->specularExp = std::stoi(Ns);
+                } else if (type == "Ka") {
+                    std::string a, b, c;
+                    stream >> a >> b >> c;
+
+                    material->ambient = glm::vec3(std::stof(a), std::stof(b), std::stof(c));
+                } else if (type == "Kd") {
+                    std::string a, b, c;
+                    stream >> a >> b >> c;
+
+                    material->diffuse = glm::vec3(std::stof(a), std::stof(b), std::stof(c));
+                } else if (type == "Ks") {
+                    std::string a, b, c;
+                    stream >> a >> b >> c;
+
+                    material->specular = glm::vec3(std::stof(a), std::stof(b), std::stof(c));
+                } else if (type == "Ke") {
+                    std::string a, b, c;
+                    stream >> a >> b >> c;
+
+                    material->emissive = glm::vec3(std::stof(a), std::stof(b), std::stof(c));
+                } else if (type == "map_Kd") {
+                    std::string map_Kd;
+                    stream >> map_Kd;
+
+                    material->diffuseTexture = (root / map_Kd).string();
+                } else if (type == "map_Bump") {
+                    std::string map_Bump;
+                    stream >> map_Bump;
+
+                    material->normalTexture = (root / map_Bump).string();
+                } else if (type == "map_Ks") {
+                    std::string map_Ks;
+                    stream >> map_Ks;
+
+                    material->specularTexture = (root / map_Ks).string();
+                }
             }
         }
 
@@ -205,6 +301,7 @@ class Model {
             return result;
         }
         
+        std::unordered_map<std::string, Material*> materials;
         std::vector<Mesh*> meshes;
         std::string path;
 };
