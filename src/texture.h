@@ -5,6 +5,8 @@
 class Texture {
     public:
         Texture(const char* path) {
+            this->path = path;
+
             int width, height, channels;
             stbi_set_flip_vertically_on_load(true);  
             unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
@@ -33,8 +35,13 @@ class Texture {
         unsigned int GetTextureID() {
             return this->id;
         };
+
+        const char* GetPath() {
+            return this->path;
+        }
     
     private:
+        const char* path;
         unsigned int id;
 };
 

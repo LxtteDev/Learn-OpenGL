@@ -28,9 +28,9 @@ class Model {
                 this->meshes[i]->Draw();
         };
 
-        void Draw(glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
+        void Draw(glm::vec3 camera, glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
             for (unsigned int i = 0; i < this->meshes.size(); i++)
-                this->meshes[i]->Draw(projection, model, view);
+                this->meshes[i]->Draw(camera, projection, model, view);
         };
 
         void Debug() {
@@ -117,10 +117,10 @@ class Model {
 
                     normals.push_back(glm::vec3(x, y, z));
                 } else if (prefix == "vt") { // UV Coords
-                    float x, y;
-                    stream >> x >> y;
+                    float u, v;
+                    stream >> u >> v;
 
-                    uvs.push_back(glm::vec2(x, y));          
+                    uvs.push_back(glm::vec2(u, 1.0f - v));          
                 } else if (prefix == "f") {
                     std::string f1, f2, f3, f4;
                     stream >> f1 >> f2 >> f3 >> f4;
@@ -270,17 +270,19 @@ class Model {
                     std::string map_Kd;
                     stream >> map_Kd;
 
-                    material->diffuseTexture = (root / map_Kd).string();
+                    printf("%s\n", (root / map_Kd).string().c_str());
+                    material->diffuseTexture = new Texture((root / map_Kd).string().c_str());
+                    
                 } else if (type == "map_Bump") {
                     std::string map_Bump;
                     stream >> map_Bump;
 
-                    material->normalTexture = (root / map_Bump).string();
+                    material->normalTexture = new Texture((root / map_Bump).string().c_str());
                 } else if (type == "map_Ks") {
                     std::string map_Ks;
                     stream >> map_Ks;
 
-                    material->specularTexture = (root / map_Ks).string();
+                    material->specularTexture = new Texture((root / map_Ks).string().c_str());
                 }
             }
         }

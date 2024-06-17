@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, -6.0f));
         model = glm::scale(model, glm::vec3(1.0f));
 
-        backpack->Draw(projection, model, view);
+        backpack->Draw(camera->GetPosition(), projection, model, view);
         
         glfwSwapBuffers(window);
         glfwPollEvents();

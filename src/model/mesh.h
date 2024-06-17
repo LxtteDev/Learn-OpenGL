@@ -4,8 +4,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
+#include <algorithm>
 #include <vector>
 
+#include "../texture.h"
 #include "../shader.h"
 #include "../shared.h"
 
@@ -22,9 +24,9 @@ struct Material {
     glm::vec3 diffuse;  // Kd
     glm::vec3 specular; // Ks
     glm::vec3 emissive; // Ke
-    std::string diffuseTexture;  // map_Kd
-    std::string normalTexture;   // map_Bump
-    std::string specularTexture; // map_Ks
+    Texture* diffuseTexture;  // map_Kd
+    Texture* normalTexture;   // map_Bump
+    Texture* specularTexture; // map_Ks
 };
 
 class Mesh {
@@ -33,16 +35,22 @@ class Mesh {
             this->vertices.resize(vertices.size());
             this->indices.resize(indices.size());
 
+            this->material = material;
+
             std::copy(vertices.begin(), vertices.end(), this->vertices.begin());
             std::copy(indices.begin(), indices.end(), this->indices.begin());
 
             GL_CHECK();
-            this->shader = new Shader("res/shaders/vertex.glsl", "res/shaders/lighting/diffuse.glsl");
+            this->shader = new Shader("res/shaders/vertex.glsl", "res/shaders/lightingPlus/materialTexture.glsl");
             this->shader->Bind();
 
-            this->shader->SetUniformVec3f("uLightingPosition", 1.2f, 1.0f, 2.0f);
-            this->shader->SetUniformVec3f("uLightingColour", 1.0f, 1.0f, 1.0f);
-            this->shader->SetUniformVec3f("uObjectColour", material->diffuse);
+            this->shader->SetUniformVec3f("light.position", 1.2f, 1.0f, 2.0f);
+            this->shader->SetUniformVec3f("light.specular", 1.0f, 1.0f, 1.0f);
+            this->shader->SetUniformVec3f("light.ambient", 1.0f, 1.0f, 1.0f);
+            this->shader->SetUniformVec3f("light.diffuse", 1.0f, 1.0f, 1.0f);
+            // this->shader->SetUniformVec3f("uObjectColour", material->diffuse);
+
+            this->shader->SetUniform1f("material.shininess", 1.0f);
 
             Mesh::SetupMesh();
         };
@@ -65,25 +73,15 @@ class Mesh {
         };
 
         void Draw() {
-            /* unsigned int i = 0;
-            unsigned int j = 0;
+            if (this->material->diffuseTexture->GetTextureID() != -1) {
+                GL_CHECK(glActiveTexture(GL_TEXTURE0 + this->material->diffuseTexture->GetTextureID() - 1));
+                this->shader->SetUniform1i("material.diffuse", this->material->diffuseTexture->GetTextureID());
+                GL_CHECK(glBindTexture(GL_TEXTURE_2D, this->material->diffuseTexture->GetTextureID()));
+            }
 
-            for (unsigned int k = 0; k < this->textures.size(); k++) {
-                glActiveTexture(GL_TEXTURE0 + k);
+            // this->shader->SetUniform1i("material.specular", material->specularTexture->GetTextureID());
 
-                switch (this->textures[k].type) {
-                    case TextureType::DIFFUSE:
-                        shader->SetUniform1i(("Mesh_Diffuse" + std::to_string(i++)).c_str(), this->textures[k].id);
-                        break;
-                    case TextureType::SPECULAR:
-                        shader->SetUniform1i(("Mesh_Specular" + std::to_string(j++)).c_str(), this->textures[k].id);
-                        break;
-                }
-
-                glBindTexture(GL_TEXTURE_2D, this->textures[k].id);
-            } */
-
-            // glActiveTexture(GL_TEXTURE0);
+            GL_CHECK(glBindTexture(GL_TEXTURE_2D, 0));
 
             glGetError();
             GL_CHECK(glBindVertexArray(this->vertexArray));
@@ -91,12 +89,14 @@ class Mesh {
             GL_CHECK(glBindVertexArray(0));
         };
 
-        void Draw(glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
+        void Draw(glm::vec3 camera, glm::mat4 projection, glm::mat4 model, glm::mat4 view) {
             this->shader->Bind();
 
             this->shader->SetUniformMat4f("uProjection", projection);
             this->shader->SetUniformMat4f("uModel", model);
             this->shader->SetUniformMat4f("uView", view);
+
+            this->shader->SetUniformVec3f("uViewPosition", camera);
 
             Mesh::Draw();
         }
@@ -150,11 +150,11 @@ class Mesh {
             GL_CHECK(glEnableVertexAttribArray(0));
             GL_CHECK(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));
 
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+            GL_CHECK(glEnableVertexAttribArray(1));
+            GL_CHECK(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal)));
 
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+            GL_CHECK(glEnableVertexAttribArray(2));
+            GL_CHECK(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv)));
 
             // Clean up
             GL_CHECK(glBindVertexArray(0));
@@ -163,6 +163,7 @@ class Mesh {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
 
+        Material* material;
         Shader* shader;
 
         unsigned int vertexArray, vertexBuffer, elementBuffer;
